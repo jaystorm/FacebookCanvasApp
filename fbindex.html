@@ -3,6 +3,50 @@
 <head>
     <title>JayStorm - JayData FaceBook App Example</title>
 
+    <link href="<%= files %>/Styles/bootstrap/css/bootstrap.min.css " rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .app-container {
+            padding: 0 20px;
+        }
+
+        .span5 {
+            border-right: 1px solid #ddd;
+        }
+
+        .users .media {
+            float: left; width: 45%; 
+            margin: 0 20px 25px 0;
+        }
+
+        .users .media:nth-child(even) {
+            margin-right: 0;
+        }
+
+        .media small {
+            display: block;
+        }
+
+        .progress {
+            margin: 5px 15px 15px 0; clear: both;
+        }
+
+        .img-polaroid {
+            width: 50px; height: 50px;
+        }
+
+        h3 {
+            background: #F3F3F3;
+            color: #3A87AD;
+            margin: 0 0 20px -32px;
+            padding: 5px 0 2px 32px;
+            border-bottom: 1px solid #DDD;
+        }
+
+        .white {
+            color: #fff;
+        }
+    </style>
+
     <script type="text/javascript">
         /*login*/
         if ('<%= login %>' === 'true') {
@@ -16,65 +60,78 @@
 
     <script src="<%= files %>/Scripts/jaydata.js"></script>
     <script src="<%= files %>/Scripts/jaydataproviders/FacebookProvider.js"></script>
-    <style type="text/css">
-        #storedUsers, #fbFriends, #storedVisitors {
-            height: 300px;
-            overflow: auto;
-        }
-
-            #storedUsers div, #fbFriends div, #storedVisitors div {
-                float: left;
-            }
-    </style>
 </head>
 <body>
-    <div>
-        <h1 id="wellcome"></h1>
-        <div style="float: left; width: 50%;">
-            <h2>Facebook Friends</h2>
-            <div id="fbFriends">Loading...</div>
-        </div>
-        <div style="float: left; width: 50%;">
-            <h2>Localstored Users</h2>
-            <div id="storedUsers">Loading...</div>
-        </div>
-        <div style="width: 100%; overflow: hidden;">
-            <h2>Last Visitors</h2>
-            <div id="storedVisitors"></div>
+    <div class="app-container">
+        <h2 id="welcome"></h2>
+        <div class="row-fluid">
+            <div class="span5">
+                <h3 class="text-info">Your Facebook Friends</h3>
+            
+                <div class="users" id="fbFriends">
+                    <div class="progress progress-striped active">
+                        <div class="bar" style="width: 100%"><span class="white">Loading...</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="span5">
+                <h3 class="text-info">Favorite Users</h3>
+                <div class="users" id="storedUsers">
+                    <div class="progress progress-striped active">
+                        <div class="bar" style="width: 100%"><span class="white">Loading...</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="span2">
+                <h3 class="muted">Last Visitors</h3>
+                <div id="storedVisitors"></div>
+            </div>
         </div>
     </div>
 
     <script id="visitor-template" type="text/x-handlebars-template">
-        <div>
-            <img data-uid="{{uid}}" src="{{pic_small_with_logo}}" style="float:left;height: 35px; width:35px;" />
-            <ul>
-                <li style="list-style: none;"><a target="_blank" href="{{profile_url}}" >{{name}}</a></li>
-                <li style="list-style: none;">friends avarage age: {{avg_age}}</li>
-            </ul>
+        <div class="media">
+            <a class="pull-left" target="_blank" href="{{profile_url}}">
+                <img data-uid="{{uid}}" src="{{pic_small_with_logo}}" class="img-polaroid" />
+            </a>
+            <div class="media-body">
+                <strong class="media-heading"><a target="_blank" href="{{profile_url}}" >{{name}}</a></strong>
+                <small>Friends avarage age: {{avg_age}}</small>
+            </div>
         </div>
     </script>
     <script id="fbuser-template" type="text/x-handlebars-template">
         {{#each this}}
-            <div>
-                <img data-uid="{{uid}}" src="{{pic_small_with_logo}}" style="float:left;height: 35px; width:35px;" />
-                <ul>
-                    <li style="list-style: none;"><a target="_blank" href="{{profile_url}}" >{{name}}</a></li>
-                    <li style="list-style: none;">Friends count: {{friend_count}}</li>
-                </ul>
+            <div class="media">
+                <a class="pull-left" target="_blank" href="{{profile_url}}">
+                    <img data-uid="{{uid}}" src="{{pic_small_with_logo}}" class="img-polaroid" />
+                </a>
+                <div class="media-body">
+                    <a data-uid="{{uid}}" href="#" class="btn btn-small btn-info pull-right fav-add"><i class="icon-star icon-white">&nbsp;</i></a>
+                    <strong class="media-heading"><a target="_blank" href="{{profile_url}}" >{{name}}</a></strong>
+                    <small>Friends count: {{friend_count}}</small>
+                </div>
             </div>
         {{/each}}
         {{#if more}}
-            <div style="width: 100%; overflow: hidden;">Loading more...</div>
+            <div class="progress progress-striped active">
+                <div class="bar" style="width: 100%"><span class="white">Loading...</span></div>
+            </div>
         {{/if}}
     </script>
     <script id="localuser-template" type="text/x-handlebars-template">
         {{#each this}}
-            <div>
-                <img data-uid="{{uid}}" src="{{pic_small_with_logo}}" style="float:left;height: 35px; width:35px;" />
-                <ul>
-                    <li style="list-style: none;"><a target="_blank" href="{{profile_url}}" >{{name}}</a></li>
-                    <li style="list-style: none;">Stored: {{storedDate this}}</li>
-                </ul>
+            <div class="media">
+                <a class="pull-left" target="_blank" href="{{profile_url}}">
+                    <img data-uid="{{uid}}" src="{{pic_small_with_logo}}" class="img-polaroid" />
+                </a>
+                <div class="media-body">
+                    <a data-uid="{{uid}}" href="#" class="btn btn-small pull-right fav-del"><i class="icon-remove">&nbsp;</i></a>
+                    <strong class="media-heading"><a target="_blank" href="{{profile_url}}" >{{name}}</a></strong>
+                    <small>Stored: {{storedDate this}}</small>
+                </div>
             </div>
         {{/each}}
     </script>
@@ -96,10 +153,10 @@
 
         window.fbAsyncInit = function () {
             FB.init({
-                appId: '<%= clientId %>', /* App ID */
-                status: true, /* check login status */
-                cookie: true, /* enable cookies to allow the server to access the session */
-                xfbml: true  /* parse XFBML */
+                appId: '<%= clientId %>',   /* App ID */
+                status: true,               /* check login status */
+                cookie: true,               /* enable cookies to allow the server to access the session */
+                xfbml: true                 /* parse XFBML */
             });
             var currentUser = $.Deferred();
             var allFriends = $.Deferred();
@@ -108,7 +165,7 @@
                 var fbContext = new $data.Facebook.FQLContext({ name: 'Facebook', Access_Token: resp.authResponse.accessToken });
                 fbContext.onReady(function () {
                     var mePromise = fbContext.Users.single(function (u) { return u.uid == this.me }, { me: $data.Facebook.FQLCommands.me }, function (me) {
-                        $('#wellcome').html('Dear ' + me.name);
+                        $('#welcome').html('Welcome ' + me.name + '!');
                         currentUser.resolve(me);
                     });
 
@@ -184,7 +241,7 @@
 
 
             function addAction(ctx, data) {
-                $('#fbFriends img').click(function () {
+                $('.fav-add').click(function () {
                     var self = this;
                     var user = data.filter(function (item) { return item.uid === $(self).data('uid'); })[0];
                     ctx.Users.filter(function (u) { return u.uid == this.uid }, { uid: user.uid }).length(function (count) {
@@ -204,13 +261,13 @@
                 });
             };
             function removeAction(ctx) {
-                $('#storedUsers img').live('click', function () {
+                $('.fav-del').live('click', function () {
                     var self = this;
                     var userId = $(self).data('uid');
                     if (userId) {
                         ctx.Users.remove({ uid: userId });
                         ctx.saveChanges();
-                        $(self).parent().remove();
+                        $(self).parents("div.media:first").remove();
                     }
                 });
             };
